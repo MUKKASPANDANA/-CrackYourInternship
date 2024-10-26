@@ -1,0 +1,36 @@
+class RandomizedCollection{
+    private List<Integer>nums;
+    private Map<Integer,Set<Integer>>idxMap;
+    private Random rand;
+    public RandomizedCollection(){
+        nums=new ArrayList<>();
+        idxMap=new HashMap<>();
+        rand=new Random();
+    }
+    public boolean insert(int val){
+        boolean notPresent=!idxMap.containsKey(val);
+        idxMap.putIfAbsent(val,new HashSet<>());
+        idxMap.get(val).add(nums.size());
+        nums.add(val);
+        return notPresent;
+    }
+    public boolean remove(int val){
+        if(!idxMap.containsKey(val)||idxMap.get(val).isEmpty())
+            return false;
+        int removeIdx=idxMap.get(val).iterator().next();
+        idxMap.get(val).remove(removeIdx);
+        int lastElement = nums.get(nums.size() - 1);
+        nums.set(removeIdx, lastElement);
+        idxMap.get(lastElement).add(removeIdx);
+        idxMap.get(lastElement).remove(nums.size() - 1);
+        nums.remove(nums.size() - 1);
+        if (idxMap.get(val).isEmpty()) {
+            idxMap.remove(val);
+        }
+        return true;
+    }
+
+    public int getRandom() {
+        return nums.get(rand.nextInt(nums.size()));
+    }
+}
