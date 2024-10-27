@@ -1,0 +1,29 @@
+class Solution {
+    public int calculate(String s) {
+        int current=0,result=0,lastValue=0;
+        char operator='+';
+        for(int i=0;i<s.length();i++){
+            char c=s.charAt(i);
+            if(Character.isDigit(c)){
+                current=current*10+(c-'0');
+            }
+            if(!Character.isDigit(c)&&c!=' '||i == s.length()-1){
+                if(operator=='+'){
+                    result+=lastValue;
+                    lastValue=current;
+                }else if(operator=='-'){
+                    result+=lastValue;
+                    lastValue=-current;
+                }else if(operator=='*'){
+                    lastValue*=current;
+                }else if(operator=='/'){
+                    lastValue/=current;
+                }
+                operator=c;
+                current=0;
+            }
+        }
+        return result+lastValue;
+        
+    }
+}
