@@ -1,0 +1,51 @@
+class Solution {
+    public int shortestBridge(int[][] grid) {
+        int n = grid.length;
+        boolean[][] visited = new boolean[n][n];
+        List<int[]> island = new ArrayList<>();
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1 && !visited[i][j]) {
+                    dfs(grid, visited, i, j, island);
+                    break;
+                }
+            }
+            if (!island.isEmpty()) break;
+        }
+        
+        Queue<int[]> queue = new LinkedList<>();
+        for (int[] cell : island) {
+            queue.offer(cell);
+        }
+        
+        int steps = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = queue.poll();
+                int x = cur[0], y = cur[1];
+                for (int[] dir : new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+                    int nx = x + dir[0], ny = y + dir[1];
+                    if (nx >= 0 && ny >= 0 && nx < n && ny < n && !visited[nx][ny]) {
+                        if (grid[nx][ny] == 1) return steps;
+                        visited[nx][ny] = true;
+                        queue.offer(new int[]{nx, ny});
+                    }
+                }
+            }
+            steps++;
+        }
+        return -1;
+    }
+    
+    private void dfs(int[][] grid, boolean[][] visited, int i, int j, List<int[]> island) {
+        int n = grid.length;
+        if (i < 0 || j < 0 || i >= n || j >= n || visited[i][j] || grid[i][j] == 0) return;
+        visited[i][j] = true;
+        island.add(new int[]{i, j});
+        for (int[] dir : new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+            dfs(grid, visited, i + dir[0], j + dir[1], island);
+        }
+    }
+}
