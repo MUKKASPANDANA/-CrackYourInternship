@@ -1,0 +1,45 @@
+import java.util.*;
+
+public class Solution {
+    public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+        Map<String, Map<String, Double>> graph = buildGraph(equations, values);
+        double[] results = new double[queries.size()];
+        
+        for (int i = 0; i < queries.size(); i++) {
+            String numerator = queries.get(i).get(0);
+            String denominator = queries.get(i).get(1);
+            results[i] = dfs(numerator, denominator, graph, new HashSet<>());
+        }
+        return results;
+    }
+
+    private Map<String, Map<String, Double>> buildGraph(List<List<String>> equations, double[] values) {
+        Map<String, Map<String, Double>> graph = new HashMap<>();
+        
+        for (int i = 0; i < equations.size(); i++) {
+            String num = equations.get(i).get(0);
+            String den = equations.get(i).get(1);
+            double value = values[i];
+            
+            graph.putIfAbsent(num, new HashMap<>());
+            graph.putIfAbsent(den, new HashMap<>());
+            graph.get(num).put(den, value);
+            graph.get(den).put(num, 1 / value);
+        }
+        return graph;
+    }
+
+    private double dfs(String src, String dst, Map<String, Map<String, Double>> graph, Set<String> visited) {
+        if (!graph.containsKey(src) || !graph.containsKey(dst)) return -1.0;
+        if (src.equals(dst)) return 1.0;
+        
+        visited.add(src);
+        
+        for (Map.Entry<String, Double> neighbor : graph.get(src).entrySet()) {
+            if (visited.contains(neighbor.getKey())) continue;
+            double result = dfs(neighbor.getKey(), dst, graph, visited);
+            if (result != -1.0) return result * neighbor.getValue();
+        }
+        return -1.0;
+    }
+}
