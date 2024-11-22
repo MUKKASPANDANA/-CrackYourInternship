@@ -1,0 +1,36 @@
+public class Solution {
+    private int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // Right, Down, Left, Up
+    private int rows, cols;
+
+    public int longestIncreasingPath(int[][] matrix) {
+        if (matrix == null || matrix.length == 0) return 0;
+
+        rows = matrix.length;
+        cols = matrix[0].length;
+        int[][] dp = new int[rows][cols]; // Memoization matrix
+        int maxPath = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                maxPath = Math.max(maxPath, dfs(matrix, i, j, dp));
+            }
+        }
+        return maxPath;
+    }
+
+    private int dfs(int[][] matrix, int row, int col, int[][] dp) {
+        if (dp[row][col] != 0) return dp[row][col]; // Return the cached result
+        
+        int max = 1; // Each cell is a path of length 1 by default
+        for (int[] dir : directions) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+
+            if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && matrix[newRow][newCol] > matrix[row][col]) {
+                max = Math.max(max, 1 + dfs(matrix, newRow, newCol, dp));
+            }
+        }
+        dp[row][col] = max; // Cache the result
+        return max;
+    }
+}
