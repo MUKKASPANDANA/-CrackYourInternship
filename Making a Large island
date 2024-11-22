@@ -1,0 +1,65 @@
+import java.util.*;
+
+public class Solution {
+    private static final int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // Right, Down, Left, Up
+
+    public int largestIsland(int[][] grid) {
+        int n = grid.length;
+        Map<Integer, Integer> islandSizes = new HashMap<>();
+        int islandIndex = 2; // Start labeling islands from 2 to avoid confusion with 0s and 1s
+        int maxIsland = 0;
+
+        // Step 1: Identify all islands and calculate their sizes
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    int size = dfs(grid, i, j, islandIndex);
+                    islandSizes.put(islandIndex, size);
+                    maxIsland = Math.max(maxIsland, size); // Track the largest initial island
+                    islandIndex++;
+                }
+            }
+        }
+
+        // Step 2: Check each 0 and calculate potential island size
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    Set<Integer> seenIslands = new HashSet<>();
+                    int potentialSize = 1; // Changing this 0 to 1 adds at least one cell
+
+                    for (int[] dir : directions) {
+                        int newRow = i + dir[0];
+                        int newCol = j + dir[1];
+
+                        if (newRow >= 0 && newRow < n && newCol >= 0 && newCol < n && grid[newRow][newCol] > 1) {
+                            int islandId = grid[newRow][newCol];
+                            if (seenIslands.add(islandId)) {
+                                potentialSize += islandSizes.get(islandId); // Add size if it's a new neighboring island
+                            }
+                        }
+                    }
+                    maxIsland = Math.max(maxIsland, potentialSize); // Update max island size if necessary
+                }
+            }
+        }
+
+        return maxIsland;
+    }
+
+    private int dfs(int[][] grid, int row, int col, int islandIndex) {
+        int n = grid.length;
+        if (row < 0 || row >= n || col < 0 || col >= n || grid[row][col] != 1) {
+            return 0;
+        }
+
+        grid[row][col] = islandIndex; // Mark the cell with the island index
+        int size = 1;
+
+        for (int[] dir : directions) {
+            size += dfs(grid, row + dir[0], col + dir[1], islandIndex);
+        }
+
+        return size;
+    }
+}
