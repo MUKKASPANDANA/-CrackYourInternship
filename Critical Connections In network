@@ -1,0 +1,56 @@
+import java.util.*;
+
+class Solution {
+    private int time = 0;  // Global timestamp for discovery times
+    private List<List<Integer>> result = new ArrayList<>();
+
+    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());  // Initialize adjacency list for each node
+        }
+
+        // Build the graph as an adjacency list
+        for (List<Integer> connection : connections) {
+            int u = connection.get(0), v = connection.get(1);
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+        }
+
+        // Arrays to store discovery times and low values
+        int[] disc = new int[n];  // Discovery times
+        int[] low = new int[n];   // Lowest reachable nodes
+        boolean[] visited = new boolean[n];  // Track visited nodes
+
+        // Start DFS from node 0
+        dfs(0, -1, graph, disc, low, visited);
+
+        return result;  // Return the list of critical connections
+    }
+
+    private void dfs(int current, int parent, List<List<Integer>> graph, int[] disc, int[] low, boolean[] visited) {
+        visited[current] = true;
+        disc[current] = low[current] = ++time;  // Set discovery and low times
+
+        for (int neighbor : graph.get(current)) {
+            if (neighbor == parent) {
+                continue;  // Skip the parent node
+            }
+
+            if (!visited[neighbor]) {  // If the neighbor is not visited, continue DFS
+                dfs(neighbor, current, graph, disc, low, visited);
+
+                // Update the low value of the current node based on the subtree
+                low[current] = Math.min(low[current], low[neighbor]);
+
+                // Check if the edge is a bridge
+                if (low[neighbor] > disc[current]) {
+                    result.add(Arrays.asList(current, neighbor));
+                }
+            } else {
+                // Update low value when visiting a back edge
+                low[current] = Math.min(low[current], disc[neighbor]);
+            }
+        }
+    }
+}
