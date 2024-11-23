@@ -1,0 +1,54 @@
+import java.util.*;
+
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Set<String> wordSet = new HashSet<>(wordList);  // Convert wordList to a set for O(1) lookups
+        if (!wordSet.contains(endWord)) {  // If endWord is not in wordList, return 0 immediately
+            return 0;
+        }
+        
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);  // Start BFS from beginWord
+        int steps = 1;  // Start with step count 1, as beginWord counts as a step
+        
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            
+            for (int i = 0; i < size; i++) {
+                String currentWord = queue.poll();  // Dequeue the current word
+                
+                // Check if current word is the endWord
+                if (currentWord.equals(endWord)) {
+                    return steps;
+                }
+                
+                char[] wordChars = currentWord.toCharArray();  // Convert the word to a character array
+                
+                // Explore all possible one-letter transformations
+                for (int j = 0; j < wordChars.length; j++) {
+                    char originalChar = wordChars[j];  // Save the original character
+                    
+                    // Try changing the character to every other lowercase letter
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        if (wordChars[j] == c) continue;  // Skip if the character is the same
+                        
+                        wordChars[j] = c;  // Change one character
+                        String newWord = new String(wordChars);  // Form the new word
+                        
+                        // If the new word is in the wordSet, add it to the queue for the next level
+                        if (wordSet.contains(newWord)) {
+                            queue.offer(newWord);
+                            wordSet.remove(newWord);  // Remove to prevent revisiting
+                        }
+                    }
+                    
+                    wordChars[j] = originalChar;  // Restore the original character
+                }
+            }
+            
+            steps++;  // Increment the step count after processing all words at the current level
+        }
+        
+        return 0;  // If no transformation sequence is found
+    }
+}
