@@ -1,0 +1,59 @@
+class WordDictionary {
+    private class TrieNode {
+        TrieNode[] children;
+        boolean isEndOfWord;
+
+        TrieNode() {
+            children = new TrieNode[26]; // For lowercase English letters
+            isEndOfWord = false;
+        }
+    }
+
+    private TrieNode root;
+
+    // Initialize the data structure
+    public WordDictionary() {
+        root = new TrieNode();
+    }
+
+    // Add a word to the Trie
+    public void addWord(String word) {
+        TrieNode node = root;
+        for (char c : word.toCharArray()) {
+            int index = c - 'a';
+            if (node.children[index] == null) {
+                node.children[index] = new TrieNode();
+            }
+            node = node.children[index];
+        }
+        node.isEndOfWord = true;
+    }
+
+    // Search for a word with support for wildcard '.'
+    public boolean search(String word) {
+        return searchInNode(word, root, 0);
+    }
+
+    // Helper method for recursive search
+    private boolean searchInNode(String word, TrieNode node, int pos) {
+        if (pos == word.length()) {
+            return node.isEndOfWord;
+        }
+
+        char c = word.charAt(pos);
+        if (c == '.') {  // Wildcard: check all children
+            for (TrieNode child : node.children) {
+                if (child != null && searchInNode(word, child, pos + 1)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {  // Regular character: move to the next node
+            int index = c - 'a';
+            if (node.children[index] == null) {
+                return false;
+            }
+            return searchInNode(word, node.children[index], pos + 1);
+        }
+    }
+}
