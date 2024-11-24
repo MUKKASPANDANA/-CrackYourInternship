@@ -1,0 +1,37 @@
+class Solution {
+    public int kthSmallest(int[][] matrix, int k) {
+        int n = matrix.length;
+        int left = matrix[0][0];
+        int right = matrix[n - 1][n - 1];
+        
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            int count = countLessOrEqual(matrix, mid);
+            
+            if (count < k) {
+                left = mid + 1;  // Move the lower bound up
+            } else {
+                right = mid;  // Adjust the upper bound down
+            }
+        }
+        
+        return left;  // kth smallest element
+    }
+
+    private int countLessOrEqual(int[][] matrix, int target) {
+        int n = matrix.length;
+        int count = 0;
+        int row = n - 1, col = 0;  // Start from the bottom-left
+        
+        while (row >= 0 && col < n) {
+            if (matrix[row][col] <= target) {
+                count += (row + 1);  // All elements in this column up to this row are <= target
+                col++;  // Move to the next column
+            } else {
+                row--;  // Move up the row
+            }
+        }
+        
+        return count;
+    }
+}
