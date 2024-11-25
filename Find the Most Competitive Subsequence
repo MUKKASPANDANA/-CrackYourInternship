@@ -1,0 +1,15 @@
+class Solution {
+    public int[] mostCompetitive(int[] nums, int k) {
+        int[] result=new int[k];
+        int n=nums.length,top=0;
+        for(int i=0;i<n;i++){
+            while(top>0&&nums[i]<result[top-1]&&top+n-i>k){
+                top--;
+            }
+            if(top<k){
+                result[top++]=nums[i];
+            }
+        }
+        return result;
+    }
+}
